@@ -65,6 +65,7 @@
     <string name="status_verification_succeeded">Verification succeeded</string>
     <string name="status_sign_in_failed">Sign-in failed</string>
     <string name="instant_validation">(instant validation)</string>
+    <string name="input_check_failed">Input isn\'t valid</string>
 
     <string name="firebase_status_fmt"> %s</string>
     <string name="firebase_user_management">Firebase User Management</string>

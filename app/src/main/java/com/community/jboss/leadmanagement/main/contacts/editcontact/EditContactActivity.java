@@ -16,7 +16,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,7 +37,8 @@ import butterknife.ButterKnife;
 
 import static com.community.jboss.leadmanagement.SettingsActivity.PREF_DARK_THEME;
 
-public class EditContactActivity extends AppCompatActivity {
+public class EditContactActivity extends AppCompatActivity
+{
     public static final String INTENT_EXTRA_CONTACT_NUM = "INTENT_EXTRA_CONTACT_NUM";
 
     @BindView(R.id.add_contact_toolbar)
@@ -65,11 +65,13 @@ public class EditContactActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState)
+    {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean useDarkTheme = preferences.getBoolean(PREF_DARK_THEME, false);
 
-        if(useDarkTheme) {
+        if (useDarkTheme)
+        {
             setTheme(R.style.AppTheme_BG);
         }
 
@@ -78,9 +80,8 @@ public class EditContactActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        locationField.setHint(Html.fromHtml(getString(R.string.location)+" <small>(optional)</small>", Html.FROM_HTML_MODE_LEGACY));
-
-        if(useDarkTheme) {
+        if (useDarkTheme)
+        {
             setDrawableLeft(locationField, R.drawable.ic_location_white);
             setDrawableLeft(emailField, R.drawable.ic_email_white);
             setDrawableLeft(contactNameField, R.drawable.ic_person_white);
@@ -91,25 +92,33 @@ public class EditContactActivity extends AppCompatActivity {
 
 
         mViewModel = ViewModelProviders.of(this).get(EditContactActivityViewModel.class);
-        mViewModel.getContact().observe(this, contact -> {
-            if (contact == null || mViewModel.isNewContact()) {
+        mViewModel.getContact().observe(this, contact ->
+        {
+            if (contact == null || mViewModel.isNewContact())
+            {
                 setTitle(R.string.title_add_contact);
-            } else {
+            }
+            else
+            {
                 setTitle(R.string.title_edit_contact);
                 contactNameField.setText(contact.getName());
                 emailField.setText(contact.getMail());
                 notesField.setText(contact.getNotes());
-                if(contact.getLocation() != null){
+                if (contact.getLocation() != null)
+                {
                     locationField.setText(contact.getLocation());
                 }
                 queryField.setText(contact.getQuery());
-                if(contact.getImage()  != null){
+                if (contact.getImage() != null)
+                {
                     Glide.with(this).load(bytesToBitmap(contact.getImage())).apply(new RequestOptions().circleCrop()).into(contact_logo);
                 }
             }
         });
-        mViewModel.getContactNumbers().observe(this, contactNumbers -> {
-            if (contactNumbers == null || contactNumbers.isEmpty()) {
+        mViewModel.getContactNumbers().observe(this, contactNumbers ->
+        {
+            if (contactNumbers == null || contactNumbers.isEmpty())
+            {
                 return;
             }
             // Get only the first one for now
@@ -119,9 +128,12 @@ public class EditContactActivity extends AppCompatActivity {
 
         final Intent intent = getIntent();
         final String number = intent.getStringExtra(INTENT_EXTRA_CONTACT_NUM);
-        if(mViewModel.getContactNumberByNumber(number)!=null){
+        if (mViewModel.getContactNumberByNumber(number) != null)
+        {
             mViewModel.setContact(mViewModel.getContactNumberByNumber(number).getContactId());
-        }else{
+        }
+        else
+        {
             mViewModel.setContact(null);
             contactNumberField.setText(number);
         }
@@ -129,13 +141,16 @@ public class EditContactActivity extends AppCompatActivity {
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_close_black_24dp));
         setSupportActionBar(toolbar);
         final ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
+        if (actionBar != null)
+        {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        contact_logo.setOnClickListener(new View.OnClickListener() {
+        contact_logo.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 startActivityForResult(new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI), IMAGE_FROM_GALLERY);
             }
         });
@@ -143,15 +158,18 @@ public class EditContactActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onSupportNavigateUp() {
+    public boolean onSupportNavigateUp()
+    {
         onBackPressed();
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         final int id = item.getItemId();
-        switch (id) {
+        switch (id)
+        {
             case R.id.action_save:
                 saveContact();
                 break;
@@ -163,19 +181,21 @@ public class EditContactActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.create_contact, menu);
         return true;
     }
 
 
-
     //TODO Add multiple numbers
-    private void saveContact() {
+    private void saveContact()
+    {
         // Check is Name or Password is empty
-        if (!checkInputs()) {
-            Toast.makeText(this, "Ragac nitoa", Toast.LENGTH_SHORT).show();
+        if (!checkInputs())
+        {
+            Toast.makeText(this, getString(R.string.input_check_failed), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -194,74 +214,93 @@ public class EditContactActivity extends AppCompatActivity {
         finish();
     }
 
-    private byte[] bitmapToBytes(Bitmap bitmap) {
+    private byte[] bitmapToBytes(Bitmap bitmap)
+    {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         return stream.toByteArray();
     }
 
-    public static Bitmap bytesToBitmap(byte[] bytes){
-        return BitmapFactory.decodeByteArray(bytes , 0, bytes.length);
+    public static Bitmap bytesToBitmap(byte[] bytes)
+    {
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 
-    private boolean checkEditText(EditText editText, String errorStr) {
-        if (editText.getText().toString().isEmpty()) {
+    private boolean checkEditText(EditText editText, String errorStr)
+    {
+        if (editText.getText().toString().isEmpty())
+        {
             editText.setError(errorStr);
             return false;
         }
 
         return true;
     }
-    private boolean checkNo(EditText editText, String errorStr) {
-        if (editText.getText().toString().length() < 4) {
+
+    private boolean checkNo(EditText editText, String errorStr)
+    {
+        if (editText.getText().toString().length() < 4)
+        {
             editText.setError(errorStr);
             return false;
         }
         return true;
     }
 
-    private boolean checkInputs(){
+    private boolean checkInputs()
+    {
         boolean status = true;
 
-        if(checkEditText(emailField, "Please enter mail")){
-            if(!emailField.getText().toString().contains("@")){
+        if (checkEditText(emailField, "Please enter mail"))
+        {
+            if (!emailField.getText().toString().contains("@"))
+            {
                 emailField.setError("Wrong mail formatting");
                 status = false;
             }
         }
 
-        if(!checkEditText(contactNumberField, "Please enter mobile number")){
+        if (!checkEditText(contactNumberField, "Please enter mobile number"))
+        {
             status = false;
         }
-        if(!checkEditText(contactNameField, "Please enter full name")){
+        if (!checkEditText(contactNameField, "Please enter full name"))
+        {
             status = false;
         }
-        if(!checkEditText(queryField, "Please enter query")){
+        if (!checkEditText(queryField, "Please enter query"))
+        {
             status = false;
         }
 
         return status;
     }
 
-    private void setDrawableLeft(TextInputEditText field, int id){
+    private void setDrawableLeft(TextInputEditText field, int id)
+    {
         Drawable drawable = getResources().getDrawable(id);
         drawable.setBounds(0, 0, 60, 60);
         field.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode==IMAGE_FROM_GALLERY && resultCode == Activity.RESULT_OK) {
+        if (requestCode == IMAGE_FROM_GALLERY && resultCode == Activity.RESULT_OK)
+        {
             Uri selectedImage = data.getData();
             Bitmap bitmap = null;
-            try {
+            try
+            {
                 bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
                 Glide.with(this).load(bitmap).apply(new RequestOptions().circleCrop()).into(contact_logo);
-            } catch (FileNotFoundException e) {
+            } catch (FileNotFoundException e)
+            {
                 e.printStackTrace();
-            } catch (IOException e) {
+            } catch (IOException e)
+            {
                 e.printStackTrace();
             }
         }
