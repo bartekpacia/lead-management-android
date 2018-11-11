@@ -78,7 +78,7 @@ public class EditContactActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        locationField.setHint(Html.fromHtml(getString(R.string.location)+" <small>(optional)</small>", Html.FROM_HTML_MODE_LEGACY));
+        //locationField.setHint(Html.fromHtml(getString(R.string.location)+" <small>(optional)</small>", Html.FROM_HTML_MODE_LEGACY));
 
         if(useDarkTheme) {
             setDrawableLeft(locationField, R.drawable.ic_location_white);
