@@ -175,7 +175,7 @@ public class EditContactActivity extends AppCompatActivity {
     private void saveContact() {
         // Check is Name or Password is empty
         if (!checkInputs()) {
-            Toast.makeText(this, "Ragac nitoa", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Unknown error :(", Toast.LENGTH_SHORT).show();
             return;
         }
 

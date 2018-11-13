@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
+import com.community.jboss.leadmanagement.RecentContactsWidget;
 import com.community.jboss.leadmanagement.data.daos.ContactDao;
 import com.community.jboss.leadmanagement.data.entities.Contact;
 import com.community.jboss.leadmanagement.utils.DbUtil;
@@ -18,7 +19,7 @@ public class ContactsFragmentViewModel extends AndroidViewModel {
         super(application);
 
         final ContactDao dao = DbUtil.contactDao(getApplication());
-        mContacts = dao.getContacts();
+        mContacts = dao.getContactsInViewModel();
     }
 
     public LiveData<List<Contact>> getContacts() {
@@ -28,5 +29,6 @@ public class ContactsFragmentViewModel extends AndroidViewModel {
     public void deleteContact(Contact contact) {
         final ContactDao dao = DbUtil.contactDao(getApplication());
         dao.delete(contact);
+        RecentContactsWidget.updateContactsWidget(getApplication());
     }
 }

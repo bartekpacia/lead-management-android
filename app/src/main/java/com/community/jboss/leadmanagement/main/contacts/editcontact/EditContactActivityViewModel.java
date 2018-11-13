@@ -7,6 +7,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.community.jboss.leadmanagement.RecentContactsWidget;
 import com.community.jboss.leadmanagement.data.daos.ContactDao;
 import com.community.jboss.leadmanagement.data.daos.ContactNumberDao;
 import com.community.jboss.leadmanagement.data.entities.Contact;
@@ -79,6 +80,8 @@ public class EditContactActivityViewModel extends AndroidViewModel {
         } else {
             dao.update(contact);
         }
+
+        RecentContactsWidget.updateContactsWidget(getApplication());
     }
 
     public void saveContactNumber(String number) {
@@ -99,6 +102,8 @@ public class EditContactActivityViewModel extends AndroidViewModel {
         } else {
             dao.update(contactNumber);
         }
+
+        RecentContactsWidget.updateContactsWidget(getApplication());
     }
 
     public void saveData(String email, String location, String query, byte[] image, String notes) {
@@ -112,5 +117,7 @@ public class EditContactActivityViewModel extends AndroidViewModel {
             contact.setNotes(notes);
         }
         dao.update(contact);
+
+        RecentContactsWidget.updateContactsWidget(getApplication());
     }
 }

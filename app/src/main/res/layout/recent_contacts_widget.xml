@@ -1,0 +1,25 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:padding="8dp"
+              android:background="@drawable/layout_bg_rounded_corners">
+
+    <TextView
+            android:text="Your leads"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView"
+            android:textColor="#09C"
+            android:textSize="25sp"
+            android:padding="8dp"
+            android:textStyle="bold"/>
+    <ListView
+            android:focusable="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/contact_cell_widget"
+            android:id="@+id/listView_recentContacts" android:dividerHeight="1dp" android:divider="#09C"/>
+
+</LinearLayout>

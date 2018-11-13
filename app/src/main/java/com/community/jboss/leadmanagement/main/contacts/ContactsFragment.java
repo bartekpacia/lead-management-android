@@ -1,12 +1,14 @@
 package com.community.jboss.leadmanagement.main.contacts;
 
-import android.animation.LayoutTransition;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,6 +26,8 @@ import com.community.jboss.leadmanagement.main.MainFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+
+import java.util.List;
 
 public class ContactsFragment extends MainFragment implements ContactsAdapter.AdapterListener, SearchView.OnQueryTextListener {
 
@@ -46,8 +50,11 @@ public class ContactsFragment extends MainFragment implements ContactsAdapter.Ad
         mUnbinder = ButterKnife.bind(this, view);
 
         mViewModel = ViewModelProviders.of(this).get(ContactsFragmentViewModel.class);
-        mViewModel.getContacts().observe(this, contacts -> {
-            mAdapter.replaceData(contacts);
+        mViewModel.getContacts().observe(this, new Observer<List<Contact>>() {
+            @Override
+            public void onChanged(@Nullable List<Contact> contacts) {
+                mAdapter.replaceData(contacts);
+            }
         });
 
         final MainActivity activity = (MainActivity) getActivity();
@@ -64,6 +71,17 @@ public class ContactsFragment extends MainFragment implements ContactsAdapter.Ad
             mAdapter.replaceData(mViewModel.getContacts().getValue());
             swipeToRefresh.setRefreshing(false);
         });
+
+        if(MainActivity.widgetIndex != -100)
+        {
+            //The whole thing was started by clicking a listitem in RecentContactsWidget! Show the corresponding info dialog
+            Log.d("ContactsFragment", String.valueOf(MainActivity.widgetIndex));
+
+            //Wait a moment for the layout to set up. It's bad but does the dirty work
+            //TODO Could be done MUCH better (e.g listening when the layout is ready)
+            final int delay = 400;
+            new Handler().postDelayed(() -> recyclerView.findViewHolderForAdapterPosition(MainActivity.widgetIndex).itemView.performClick(),delay);
+        }
         return view;
     }
 

@@ -24,10 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.community.jboss.leadmanagement.BaseActivity;
-import com.community.jboss.leadmanagement.PermissionManager;
-import com.community.jboss.leadmanagement.R;
-import com.community.jboss.leadmanagement.SettingsActivity;
+import com.community.jboss.leadmanagement.*;
 import com.community.jboss.leadmanagement.main.contacts.ContactsFragment;
 import com.community.jboss.leadmanagement.main.contacts.editcontact.EditContactActivity;
 import com.community.jboss.leadmanagement.main.contacts.importcontact.ImportContactActivity;
@@ -79,6 +76,9 @@ public class MainActivity extends BaseActivity
 
     public static boolean useDarkTheme;
 
+    //used to determine if (and which) widget list item was clicked
+    public static int widgetIndex;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -86,6 +86,11 @@ public class MainActivity extends BaseActivity
 
         if(useDarkTheme) {
             setTheme(R.style.AppTheme_BG);
+        }
+
+        widgetIndex = getIntent().getIntExtra(RecentContactsWidget.VIEW_INDEX_CLICKED, -100);
+        if(widgetIndex >= 0){
+            Toast.makeText(this, "Widget item " + widgetIndex + " clicked", Toast.LENGTH_SHORT).show();
         }
 
         super.onCreate(savedInstanceState);

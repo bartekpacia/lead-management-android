@@ -12,7 +12,7 @@ import com.community.jboss.leadmanagement.main.contacts.editcontact.EditContactA
  * App Widget that acts as a shortcut to EditContactActivity.
  * It enables user to add contact with a single tap.
  */
-public class ContactWidgetProvider extends AppWidgetProvider {
+public class AddContactWidget extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -21,7 +21,7 @@ public class ContactWidgetProvider extends AppWidgetProvider {
             Intent intent = new Intent(context, EditContactActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.contact_widget);
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.add_contact_widget);
             views.setOnClickPendingIntent(R.id.widgetImage, pendingIntent);
 
             // For an unknown reason, setting the android:src attribute in the layout file
