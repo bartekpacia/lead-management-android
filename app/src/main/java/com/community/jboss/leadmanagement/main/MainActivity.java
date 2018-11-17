@@ -22,7 +22,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
 import com.community.jboss.leadmanagement.BaseActivity;
 import com.community.jboss.leadmanagement.PermissionManager;
@@ -41,18 +42,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.*;
 import com.mikhaellopez.circularimageview.CircularImageView;
+import timber.log.Timber;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import timber.log.Timber;
 import static com.community.jboss.leadmanagement.SettingsActivity.PREF_DARK_THEME;
 
 public class MainActivity extends BaseActivity
@@ -84,7 +79,7 @@ public class MainActivity extends BaseActivity
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         useDarkTheme = preferences.getBoolean(PREF_DARK_THEME, false);
 
-        if(useDarkTheme) {
+        if (useDarkTheme) {
             setTheme(R.style.AppTheme_BG);
         }
 
@@ -98,20 +93,20 @@ public class MainActivity extends BaseActivity
         mViewModel.getSelectedNavItem().observe(this, this::displayNavigationItem);
 
         NavigationView navView = findViewById(R.id.nav_view);
-        View header =  navView.getHeaderView(0);
+        View header = navView.getHeaderView(0);
 
         header.findViewById(R.id.sign_in_button).setOnClickListener(this);
         header.findViewById(R.id.sign_out_button).setOnClickListener(this);
 
-        boolean isFirebaseAlreadyIntialized=false;
+        boolean isFirebaseAlreadyIntialized = false;
         List<FirebaseApp> firebaseApps = FirebaseApp.getApps(this);
-        for(FirebaseApp app : firebaseApps){
-            if(app.getName().equals(FirebaseApp.DEFAULT_APP_NAME)){
-                isFirebaseAlreadyIntialized=true;
+        for (FirebaseApp app : firebaseApps) {
+            if (app.getName().equals(FirebaseApp.DEFAULT_APP_NAME)) {
+                isFirebaseAlreadyIntialized = true;
             }
         }
 
-        if(!isFirebaseAlreadyIntialized) {
+        if (!isFirebaseAlreadyIntialized) {
             FirebaseApp.initializeApp(this, new FirebaseOptions.Builder()
                     .setApiKey("YOUR_API_KEY")
                     .setApplicationId("YOUR_APPLICATION_ID")
@@ -120,7 +115,7 @@ public class MainActivity extends BaseActivity
                     .setStorageBucket("YOUR_STORAGE_BUCKET").build());
         }
 
-        
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("YOUR_REQUEST_ID_TOKEN")
                 .requestEmail()
@@ -133,8 +128,8 @@ public class MainActivity extends BaseActivity
         permissionManager = new PermissionManager(this, this);
 
         ID = permissionManager.checkAndAskPermissions(Manifest.permission.READ_PHONE_STATE,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                Manifest.permission.RECORD_AUDIO);
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.RECORD_AUDIO);
 
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
@@ -182,15 +177,21 @@ public class MainActivity extends BaseActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if (!isUserLoggedIn()) {
+            showLoginToast();
+            signIn();
+            return false;
+        }
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
-        }else if( id == R.id.action_import ){
-            if(permissionManager.permissionStatus(Manifest.permission.READ_CONTACTS)){
-                startActivity(new Intent(MainActivity.this,ImportContactActivity.class));
-            }else{
-                permissionManager.requestPermission(109,Manifest.permission.READ_CONTACTS);
+        } else if (id == R.id.action_import) {
+            if (permissionManager.permissionStatus(Manifest.permission.READ_CONTACTS)) {
+                startActivity(new Intent(MainActivity.this, ImportContactActivity.class));
+            } else {
+                permissionManager.requestPermission(109, Manifest.permission.READ_CONTACTS);
             }
             return true;
         }
@@ -200,7 +201,8 @@ public class MainActivity extends BaseActivity
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        final MainActivityViewModel.NavigationItem navigationItem;
+        MainActivityViewModel.NavigationItem navigationItem;
+
         switch (item.getItemId()) {
             case R.id.nav_contacts:
                 navigationItem = MainActivityViewModel.NavigationItem.CONTACTS;
@@ -224,9 +226,19 @@ public class MainActivity extends BaseActivity
                 throw new IllegalArgumentException();
 
         }
-        mViewModel.setSelectedNavItem(navigationItem);
+        if (isUserLoggedIn()) {
 
-        drawer.closeDrawer(GravityCompat.START);
+            mViewModel.setSelectedNavItem(navigationItem);
+            drawer.closeDrawer(GravityCompat.START);
+
+        } else {
+            navigationItem = MainActivityViewModel.NavigationItem.CONTACTS;
+            mViewModel.setSelectedNavItem(navigationItem);
+            showLoginToast();
+            signIn();
+            return false;
+        }
+
         return true;
     }
 
@@ -308,7 +320,7 @@ public class MainActivity extends BaseActivity
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             //Snackbar.make(findViewById(R.id.main_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
-                            Toast.makeText(getApplicationContext(), "Authentication failed", Toast.LENGTH_SHORT ).show();
+                            Toast.makeText(getApplicationContext(), "Authentication failed", Toast.LENGTH_SHORT).show();
                             updateUI(null);
                         }
                         // [START_EXCLUDE]
@@ -330,18 +342,13 @@ public class MainActivity extends BaseActivity
 
         // Google sign out
         mGoogleSignInClient.signOut().addOnCompleteListener(this,
-                new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        updateUI(null);
-                    }
-                });
+                task -> updateUI(null));
     }
 
 
     private void updateUI(FirebaseUser user) {
         hideProgressDialog();
-        View header =  navigationView.getHeaderView(0);
+        View header = navigationView.getHeaderView(0);
 
         TextView mDetailTextView = header.findViewById(R.id.nav_detail);
         TextView mStatusTextView = header.findViewById(R.id.nav_status);
@@ -383,36 +390,56 @@ public class MainActivity extends BaseActivity
     public void initFab() {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
         if (fragment instanceof ContactsFragment) {
-            fab.setOnClickListener(view -> startActivity(new Intent(getApplicationContext(), EditContactActivity.class)));
             fab.setImageResource(R.drawable.ic_add_white_24dp);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (isUserLoggedIn()) {
+                        startActivity(new Intent(getApplicationContext(), EditContactActivity.class));
+                    } else {
+                        showLoginToast();
+                        signIn();
+                    }
+                }
+            });
         }
     }
 
-    private void darkTheme(boolean darkTheme) {
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-        editor.putBoolean(PREF_DARK_THEME, darkTheme);
-        editor.apply();
-
-        Intent intent = getIntent();
-        finish();
-
-        startActivity(intent);
+    private void showLoginToast() {
+        Toast.makeText(this, getString(R.string.sign_in_required), Toast.LENGTH_SHORT).show();
+        signIn();
     }
 
-    private void visibleBtn(boolean darkTheme){
+    private void darkTheme(boolean darkTheme) {
+        if (isUserLoggedIn()) {
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+            editor.putBoolean(PREF_DARK_THEME, darkTheme);
+            editor.apply();
+
+            Intent intent = getIntent();
+            finish();
+
+            startActivity(intent);
+        }
+    }
+
+    private void visibleBtn(boolean darkTheme) {
         NavigationView navigationView = findViewById(R.id.nav_view);
         Menu menu = navigationView.getMenu();
         MenuItem darkBtn = menu.findItem(R.id.toggle_theme);
         MenuItem lightBtn = menu.findItem(R.id.light_theme);
 
-        if (darkTheme){
+        if (darkTheme) {
             darkBtn.setVisible(false);
             lightBtn.setVisible(true);
-        }
-        else {
+        } else {
             darkBtn.setVisible(true);
             lightBtn.setVisible(false);
         }
+    }
+
+    private boolean isUserLoggedIn() {
+        return mAuth.getCurrentUser() != null;
     }
 
 }

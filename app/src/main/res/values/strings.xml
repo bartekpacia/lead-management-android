@@ -85,5 +85,6 @@
     <string name="slide_2_content">Easily manage and safely store all your business contacts</string>
     <string name="slide_3_header">Never forget again</string>
     <string name="slide_3_content">Record conversations to always have a backup of your important business calls</string>
+    <string name="sign_in_required">You need to sign in</string>
 
 </resources>
