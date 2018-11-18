@@ -19,7 +19,7 @@ import com.community.jboss.leadmanagement.main.contacts.editcontact.EditContactA
 public class CallReceiver extends BroadcastReceiver {
 
     private Context mContext;
-    private String CHANNEL_ID = "LEAD_MANAGEMENT_ID";
+    private static String CHANNEL_ID = "LEAD_MANAGEMENT_ID";
     private int ID = 54321;
 
     @Override
@@ -29,13 +29,13 @@ public class CallReceiver extends BroadcastReceiver {
 
         TelephonyManager tm = (TelephonyManager) context.getSystemService(Service.TELEPHONY_SERVICE);
 
-        if(tm == null) return;
+        if (tm == null) return;
 
-        tm.listen(new PhoneStateListener(){
+        tm.listen(new PhoneStateListener() {
             @Override
             public void onCallStateChanged(int state, String incomingNumber) {
                 super.onCallStateChanged(state, incomingNumber);
-                switch(state){
+                switch (state) {
                     case TelephonyManager.CALL_STATE_IDLE:
                         hideNotification();
                         break;
@@ -43,9 +43,9 @@ public class CallReceiver extends BroadcastReceiver {
                         showNotification(incomingNumber);
                         break;
                 }
-                System.out.println("incomingNumber : "+incomingNumber);
+                System.out.println("incomingNumber : " + incomingNumber);
             }
-        },PhoneStateListener.LISTEN_CALL_STATE);
+        }, PhoneStateListener.LISTEN_CALL_STATE);
 
     }
 

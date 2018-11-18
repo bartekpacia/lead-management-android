@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -19,11 +20,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.community.jboss.leadmanagement.R;
@@ -32,9 +33,6 @@ import com.community.jboss.leadmanagement.data.entities.ContactNumber;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 import static com.community.jboss.leadmanagement.SettingsActivity.PREF_DARK_THEME;
 
@@ -63,13 +61,15 @@ public class EditContactActivity extends AppCompatActivity {
 
     private EditContactActivityViewModel mViewModel;
 
+    private boolean useDarkTheme;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean useDarkTheme = preferences.getBoolean(PREF_DARK_THEME, false);
+        useDarkTheme = preferences.getBoolean(PREF_DARK_THEME, false);
 
-        if(useDarkTheme) {
+        if (useDarkTheme) {
             setTheme(R.style.AppTheme_BG);
         }
 
@@ -77,21 +77,11 @@ public class EditContactActivity extends AppCompatActivity {
         setContentView(R.layout.create_contact);
 
         ButterKnife.bind(this);
-
-        locationField.setHint(Html.fromHtml(getString(R.string.location)+" <small>(optional)</small>", Html.FROM_HTML_MODE_LEGACY));
-
-        if(useDarkTheme) {
-            setDrawableLeft(locationField, R.drawable.ic_location_white);
-            setDrawableLeft(emailField, R.drawable.ic_email_white);
-            setDrawableLeft(contactNameField, R.drawable.ic_person_white);
-            setDrawableLeft(contactNumberField, R.drawable.ic_phone_white);
-            setDrawableLeft(queryField, R.drawable.ic_question_white);
-            setDrawableLeft(notesField, R.drawable.ic_notes_white);
-        }
-
+        setupTheme();
 
         mViewModel = ViewModelProviders.of(this).get(EditContactActivityViewModel.class);
-        mViewModel.getContact().observe(this, contact -> {
+        mViewModel.getContact().observe(this, contact ->
+        {
             if (contact == null || mViewModel.isNewContact()) {
                 setTitle(R.string.title_add_contact);
             } else {
@@ -99,16 +89,17 @@ public class EditContactActivity extends AppCompatActivity {
                 contactNameField.setText(contact.getName());
                 emailField.setText(contact.getMail());
                 notesField.setText(contact.getNotes());
-                if(contact.getLocation() != null){
+                if (contact.getLocation() != null) {
                     locationField.setText(contact.getLocation());
                 }
                 queryField.setText(contact.getQuery());
-                if(contact.getImage()  != null){
+                if (contact.getImage() != null) {
                     Glide.with(this).load(bytesToBitmap(contact.getImage())).apply(new RequestOptions().circleCrop()).into(contact_logo);
                 }
             }
         });
-        mViewModel.getContactNumbers().observe(this, contactNumbers -> {
+        mViewModel.getContactNumbers().observe(this, contactNumbers ->
+        {
             if (contactNumbers == null || contactNumbers.isEmpty()) {
                 return;
             }
@@ -119,9 +110,9 @@ public class EditContactActivity extends AppCompatActivity {
 
         final Intent intent = getIntent();
         final String number = intent.getStringExtra(INTENT_EXTRA_CONTACT_NUM);
-        if(mViewModel.getContactNumberByNumber(number)!=null){
+        if (mViewModel.getContactNumberByNumber(number) != null) {
             mViewModel.setContact(mViewModel.getContactNumberByNumber(number).getContactId());
-        }else{
+        } else {
             mViewModel.setContact(null);
             contactNumberField.setText(number);
         }
@@ -133,13 +124,23 @@ public class EditContactActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        contact_logo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI), IMAGE_FROM_GALLERY);
-            }
-        });
+        contact_logo.setOnClickListener(view -> startActivityForResult(new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI), IMAGE_FROM_GALLERY));
 
+    }
+
+    private void setupTheme() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            locationField.setHint(Html.fromHtml(getString(R.string.location) + " <small>(optional)</small>", Html.FROM_HTML_MODE_LEGACY));
+        }
+
+        if (useDarkTheme) {
+            setDrawableLeft(locationField, R.drawable.ic_location_white);
+            setDrawableLeft(emailField, R.drawable.ic_email_white);
+            setDrawableLeft(contactNameField, R.drawable.ic_person_white);
+            setDrawableLeft(contactNumberField, R.drawable.ic_phone_white);
+            setDrawableLeft(queryField, R.drawable.ic_question_white);
+            setDrawableLeft(notesField, R.drawable.ic_notes_white);
+        }
     }
 
     @Override
@@ -169,13 +170,17 @@ public class EditContactActivity extends AppCompatActivity {
         return true;
     }
 
+    public static Bitmap bytesToBitmap(byte[] bytes) {
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+    }
 
 
     //TODO Add multiple numbers
     private void saveContact() {
         // Check is Name or Password is empty
         if (!checkInputs()) {
-            Toast.makeText(this, "Ragac nitoa", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -200,10 +205,6 @@ public class EditContactActivity extends AppCompatActivity {
         return stream.toByteArray();
     }
 
-    public static Bitmap bytesToBitmap(byte[] bytes){
-        return BitmapFactory.decodeByteArray(bytes , 0, bytes.length);
-    }
-
     private boolean checkEditText(EditText editText, String errorStr) {
         if (editText.getText().toString().isEmpty()) {
             editText.setError(errorStr);
@@ -212,38 +213,31 @@ public class EditContactActivity extends AppCompatActivity {
 
         return true;
     }
-    private boolean checkNo(EditText editText, String errorStr) {
-        if (editText.getText().toString().length() < 4) {
-            editText.setError(errorStr);
-            return false;
-        }
-        return true;
-    }
 
-    private boolean checkInputs(){
+    private boolean checkInputs() {
         boolean status = true;
 
-        if(checkEditText(emailField, "Please enter mail")){
-            if(!emailField.getText().toString().contains("@")){
+        if (checkEditText(emailField, "Please enter mail")) {
+            if (!emailField.getText().toString().contains("@")) {
                 emailField.setError("Wrong mail formatting");
                 status = false;
             }
         }
 
-        if(!checkEditText(contactNumberField, "Please enter mobile number")){
+        if (!checkEditText(contactNumberField, "Please enter mobile number")) {
             status = false;
         }
-        if(!checkEditText(contactNameField, "Please enter full name")){
+        if (!checkEditText(contactNameField, "Please enter full name")) {
             status = false;
         }
-        if(!checkEditText(queryField, "Please enter query")){
+        if (!checkEditText(queryField, "Please enter query")) {
             status = false;
         }
 
         return status;
     }
 
-    private void setDrawableLeft(TextInputEditText field, int id){
+    private void setDrawableLeft(TextInputEditText field, int id) {
         Drawable drawable = getResources().getDrawable(id);
         drawable.setBounds(0, 0, 60, 60);
         field.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
@@ -253,9 +247,9 @@ public class EditContactActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode==IMAGE_FROM_GALLERY && resultCode == Activity.RESULT_OK) {
+        if (requestCode == IMAGE_FROM_GALLERY && resultCode == Activity.RESULT_OK) {
             Uri selectedImage = data.getData();
-            Bitmap bitmap = null;
+            Bitmap bitmap;
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
                 Glide.with(this).load(bitmap).apply(new RequestOptions().circleCrop()).into(contact_logo);

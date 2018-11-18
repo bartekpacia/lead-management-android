@@ -85,5 +85,13 @@
     <string name="slide_2_content">Easily manage and safely store all your business contacts</string>
     <string name="slide_3_header">Never forget again</string>
     <string name="slide_3_content">Record conversations to always have a backup of your important business calls</string>
+    <string name="classcast_exception">ClassCast Exception occured! Please, help us solve it and report this bug to the
+        developer :)
+    </string>
+    <string name="out_of_memory_error">Out of memory error occured! Please contact the developer to help solve this bug
+        :)
+    </string>
+    <string name="failed_to_load_image">Failed to load image. Showing placeholder image...</string>
+    <string name="failed_to_load_images">Failed to load some of the images. Placeholders have been shown instead...</string>
 
 </resources>

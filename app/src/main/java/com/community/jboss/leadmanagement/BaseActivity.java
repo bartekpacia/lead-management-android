@@ -1,6 +1,6 @@
 package com.community.jboss.leadmanagement;
 
-/**
+/*
  * Created by sachin_rammoorthy on 05/01/18.
  */
 

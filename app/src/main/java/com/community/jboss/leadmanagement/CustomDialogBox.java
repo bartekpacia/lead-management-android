@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import com.community.jboss.leadmanagement.data.entities.Contact;
 import com.community.jboss.leadmanagement.main.contacts.ContactsAdapter;
-import com.community.jboss.leadmanagement.utils.DbUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

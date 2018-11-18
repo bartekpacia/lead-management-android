@@ -15,8 +15,8 @@ import java.io.IOException;
 
 public class CallRecorderService extends Service {
 
-    private final String AUDIO_RECORDER_FILE_EXT_MP4 = ".mp4";
-    private final String AUDIO_RECORDER_FOLDER = "Lead Management Recordings";
+    private static final String AUDIO_RECORDER_FILE_EXT_MP4 = ".mp4";
+    private static final String AUDIO_RECORDER_FOLDER = "Lead Management Recordings";
 
     private MediaRecorder recorder = null;
 

@@ -11,11 +11,19 @@ public class DbUtil {
         // Prevent this util class from being instantiated
     }
 
+    /**
+     * @param context Current context
+     * @return Data Access Object for Contact
+     */
     public static ContactDao contactDao(Context context) {
         final LeadDatabase database = LeadDatabase.getInstance(context);
         return database.getContactDao();
     }
 
+    /**
+     * @param context Current context
+     * @return Data Access Object for Contact Number
+     */
     public static ContactNumberDao contactNumberDao(Context context) {
         final LeadDatabase database = LeadDatabase.getInstance(context);
         return database.getContactNumberDao();

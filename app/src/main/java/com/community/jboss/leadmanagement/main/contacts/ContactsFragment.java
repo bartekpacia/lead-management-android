@@ -46,9 +46,7 @@ public class ContactsFragment extends MainFragment implements ContactsAdapter.Ad
         mUnbinder = ButterKnife.bind(this, view);
 
         mViewModel = ViewModelProviders.of(this).get(ContactsFragmentViewModel.class);
-        mViewModel.getContacts().observe(this, contacts -> {
-            mAdapter.replaceData(contacts);
-        });
+        mViewModel.getContacts().observe(this, contacts -> mAdapter.replaceData(contacts));
 
         final MainActivity activity = (MainActivity) getActivity();
         if (activity != null) {
