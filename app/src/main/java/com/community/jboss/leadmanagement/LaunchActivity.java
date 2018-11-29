@@ -19,12 +19,11 @@ public class LaunchActivity extends AppCompatActivity {
         wasRunBefore = preferences.getBoolean(getString(R.string.was_run_before_key), false);
 
         //Show info slider on first run
-        if(wasRunBefore) {
+        if (wasRunBefore) {
             final Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();
-        }
-        else {
+        } else {
             final Intent intent = new Intent(this, InfoSliderActivity.class);
             startActivity(intent);
             finish();

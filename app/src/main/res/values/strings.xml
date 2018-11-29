@@ -66,10 +66,10 @@
     <string name="status_sign_in_failed">Sign-in failed</string>
     <string name="instant_validation">(instant validation)</string>
 
-    <string name="firebase_status_fmt"> %s</string>
+    <string name="firebase_status_fmt">%s</string>
     <string name="firebase_user_management">Firebase User Management</string>
 
-    <string name="google_status_fmt"> %s</string>
+    <string name="google_status_fmt">%s</string>
     <string name="google_title_text">Google Sign In</string>
 
     <string name="phone_title_text">Phone Number</string>
@@ -84,6 +84,32 @@
     <string name="slide_2_header">Everything in one place</string>
     <string name="slide_2_content">Easily manage and safely store all your business contacts</string>
     <string name="slide_3_header">Never forget again</string>
-    <string name="slide_3_content">Record conversations to always have a backup of your important business calls</string>
+    <string name="slide_3_content">Record conversations to always have a backup of your important business calls
+    </string>
+    <string name="about">About</string>
+    <string name="about_header">Lead Management Android app by</string>
+    <string name="overview_description">This app is an open-source project. You can freely use it, modify,
+        share or contribute to the codebase. We also encourage you to donate so developers will be able
+        to buy more coffee to speed up the development process :)
+    </string>
+    <string name="like_and_follow">Like, follow, rate and star us on…</string>
+    <string name="view_license">View license</string>
+    <string name="github_url">https://github.com/JBossOutreach/lead-management-android</string>
+    <string name="contributions">Contributions</string>
+    <string name="view_on_github">View on GitHub</string>
+    <string name="contributors_url">https://api.github.com/repos/JBossOutreach/visiting-card-android/contributors
+    </string>
+    <string name="license_url">https://choosealicense.com/licenses/apache-2.0/</string>
+    <string name="social_tab_description">This app has been created by some cool people for free. You can
+        see them below.
+    </string>
+    <string name="jboss_description">JBoss Community is a community of open source projects primarilywritten in Java.
+        JBoss Community is a community of open source projects. The community hostsa large number of projects that are
+        written in various programming languages. The primarylanguage is Java, but there are also projects that are
+        written in Ruby, PHP, Node and other languages.
+        \n
+        \nThe app you\'re currently using is one of such projects.
+    </string>
+    <string name="about_jboss">About JBoss</string>
 
 </resources>

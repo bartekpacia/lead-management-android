@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.community.jboss.leadmanagement.R;
+import com.community.jboss.leadmanagement.main.MainActivity;
 import com.community.jboss.leadmanagement.main.MainFragment;
 
 public class GroupsFragment extends MainFragment {

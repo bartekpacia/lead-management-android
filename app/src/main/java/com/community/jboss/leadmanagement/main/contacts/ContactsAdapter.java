@@ -34,7 +34,7 @@ import com.community.jboss.leadmanagement.data.daos.ContactNumberDao;
 import com.community.jboss.leadmanagement.data.entities.Contact;
 import com.community.jboss.leadmanagement.main.contacts.editcontact.EditContactActivity;
 import com.community.jboss.leadmanagement.utils.DbUtil;
-import com.mikhaellopez.circularimageview.CircularImageView;
+import com.mikhaellopez.circularimageview.*;
 
 import java.util.ArrayList;
 import java.util.List;

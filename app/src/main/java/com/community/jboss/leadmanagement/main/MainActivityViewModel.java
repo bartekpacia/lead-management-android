@@ -21,6 +21,7 @@ public class MainActivityViewModel extends ViewModel {
         GROUPS,
         SETTINGS,
         TOGGLE_THEME,
-        LIGHT_THEME
+        LIGHT_THEME,
+        ABOUT,
     }
 }
