@@ -35,9 +35,15 @@ import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import shortbread.Shortcut;
 
 import static com.community.jboss.leadmanagement.SettingsActivity.PREF_DARK_THEME;
 
+@Shortcut(
+        id = "create_contact",
+        icon = R.mipmap.ic_person_add_blue,
+        shortLabelRes = R.string.contact_add
+)
 public class EditContactActivity extends AppCompatActivity {
     public static final String INTENT_EXTRA_CONTACT_NUM = "INTENT_EXTRA_CONTACT_NUM";
 

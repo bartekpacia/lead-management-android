@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,6 +82,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
     }
 
     private Context mContext;
+
     @Override
     public Filter getFilter() {
         mContacts = spareData;
@@ -88,17 +90,16 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
                 String data = constraint.toString();
-                if(data.isEmpty()){
+                if (data.isEmpty()) {
                     mContacts = spareData;
                 }
                 List<Contact> filteredList = new ArrayList<>();
                 final ContactNumberDao dao = DbUtil.contactNumberDao(mContext);
 
-                for(Contact contact: mContacts){
-                    if(contact.getName().toLowerCase().contains(data.toLowerCase())){
+                for (Contact contact : mContacts) {
+                    if (contact.getName().toLowerCase().contains(data.toLowerCase())) {
                         filteredList.add(contact);
-                    }
-                    else if (dao.getContactNumbers(contact.getId()).get(0).getNumber().contains(data)) {
+                    } else if (dao.getContactNumbers(contact.getId()).get(0).getNumber().contains(data)) {
                         filteredList.add(contact);
                     }
                 }
@@ -142,7 +143,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
 
             mContext = v.getContext();
             mPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-            permManager = new PermissionManager(mContext,(Activity) mContext);
+            permManager = new PermissionManager(mContext, (Activity) mContext);
             ButterKnife.bind(this, v);
 
             v.setOnClickListener(this);
@@ -150,7 +151,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
 
             deleteButton.setOnClickListener(v1 -> {
                 CustomDialogBox dialogBox = new CustomDialogBox();
-                dialogBox.showAlert((Activity) mContext,mContact,mAdapter);
+                dialogBox.showAlert((Activity) mContext, mContact, mAdapter);
                 deleteButton.setVisibility(View.INVISIBLE);
             });
         }
@@ -161,7 +162,11 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
             // TODO add contact avatar
             name.setText(contact.getName());
             number.setText(getNumber());
-            Glide.with(mContext).load(bytesToBitmap(contact.getImage())).into(picture);
+            try {
+                Glide.with(mContext).load(bytesToBitmap(contact.getImage())).into(picture);
+            } catch (NullPointerException npe) {
+                npe.printStackTrace();
+            }
         }
 
         /**
@@ -220,7 +225,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
             helper_adress = detailDialog.findViewById(R.id.popup_helper_adress);
             helper_notes = detailDialog.findViewById(R.id.popup_helper_note);
 
-            if(mPref.getBoolean(PREF_DARK_THEME,false)){
+            if (mPref.getBoolean(PREF_DARK_THEME, false)) {
                 layout.setBackgroundColor(Color.parseColor("#303030"));
                 popupName.setTextColor(Color.WHITE);
                 contactNum.setTextColor(Color.WHITE);
@@ -258,12 +263,12 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
             btnCall.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(permManager.permissionStatus(Manifest.permission.CALL_PHONE)) {
+                    if (permManager.permissionStatus(Manifest.permission.CALL_PHONE)) {
                         Intent intent = new Intent(Intent.ACTION_CALL);
                         intent.setData(Uri.parse("tel:" + number.getText().toString()));
                         context.startActivity(intent);
-                    }else{
-                        permManager.requestPermission(58,Manifest.permission.CALL_PHONE);
+                    } else {
+                        permManager.requestPermission(58, Manifest.permission.CALL_PHONE);
                     }
                 }
             });
@@ -279,7 +284,6 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
             detailDialog.show();
 
 
-
         }
 
         @Override
@@ -288,7 +292,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
                     ? View.GONE
                     : View.VISIBLE;
             deleteButton.setVisibility(newVisibility);
-            if(mPref.getBoolean(SettingsActivity.PREF_DARK_THEME,false)){
+            if (mPref.getBoolean(SettingsActivity.PREF_DARK_THEME, false)) {
                 deleteButton.setBackgroundColor(Color.parseColor("#303030"));
                 deleteButton.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_close_white));
             }
@@ -296,7 +300,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ViewHo
         }
     }
 
-    public int getDataSize(){
+    public int getDataSize() {
         return mContacts.size();
     }
 }

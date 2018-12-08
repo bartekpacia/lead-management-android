@@ -2,6 +2,7 @@ package com.community.jboss.leadmanagement;
 
 import android.app.Application;
 
+import shortbread.Shortbread;
 import timber.log.Timber;
 
 public class LeadApp extends Application {
@@ -12,5 +13,7 @@ public class LeadApp extends Application {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         }
+
+        Shortbread.create(this);
     }
 }
