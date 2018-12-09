@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.IOException;
 
 public class CallRecorderService extends Service {
 
@@ -39,21 +38,23 @@ public class CallRecorderService extends Service {
         }
 
         recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         recorder.setOutputFile(getFilename());
 
         try {
+            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             recorder.prepare();
             recorder.start();
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            Toast.makeText(this, "Started", Toast.LENGTH_SHORT).show();
+        }catch (Exception e){
+            if(e.getLocalizedMessage().contains("setAudioSource")){
+                Toast.makeText(this, "Please grant permissions to use this feature", Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(this, "Unknown error occurred, please try again later...", Toast.LENGTH_SHORT).show();
+            }
         }
 
-        Toast.makeText(this, "Started", Toast.LENGTH_SHORT).show();
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -69,7 +70,7 @@ public class CallRecorderService extends Service {
                 recorder = null;
             }
         }catch (IllegalStateException e){
-            Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error occurred, please update application or try again later.", Toast.LENGTH_LONG).show();
         }
     }
 

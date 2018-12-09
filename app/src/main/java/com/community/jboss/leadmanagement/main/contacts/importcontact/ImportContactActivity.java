@@ -4,10 +4,10 @@ package com.community.jboss.leadmanagement.main.contacts.importcontact;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -27,7 +27,7 @@ import java.util.UUID;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.community.jboss.leadmanagement.SettingsActivity.PREF_DARK_THEME;
+import static com.community.jboss.leadmanagement.SettingsFragment.PREF_DARK_THEME;
 
 public class ImportContactActivity extends AppCompatActivity {
 
@@ -95,6 +95,10 @@ public class ImportContactActivity extends AppCompatActivity {
                 ContactsContract.CommonDataKinds.Phone.NUMBER};
 
         Cursor people = getContentResolver().query(uri, projection, null, null, null);
+
+        if(people == null){
+            return new ArrayList<>();
+        }
 
         int indexName = people.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
         int indexNumber = people.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);

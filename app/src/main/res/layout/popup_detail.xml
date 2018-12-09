@@ -190,7 +190,6 @@
                                 android:src="@drawable/ic_email_blue"
                                 android:id="@+id/popup_helper_email"/>
 
-
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"

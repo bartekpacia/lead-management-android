@@ -1,7 +1,9 @@
 package com.community.jboss.leadmanagement.main.contacts.editcontact;
 
 import android.app.Activity;
+import android.appwidget.AppWidgetManager;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -9,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -28,6 +31,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.community.jboss.leadmanagement.R;
 import com.community.jboss.leadmanagement.data.entities.ContactNumber;
+import com.community.jboss.leadmanagement.widgets.RecentContactsProvider;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -37,7 +41,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import shortbread.Shortcut;
 
-import static com.community.jboss.leadmanagement.SettingsActivity.PREF_DARK_THEME;
+import static com.community.jboss.leadmanagement.SettingsFragment.PREF_DARK_THEME;
+
 
 @Shortcut(
         id = "create_contact",
@@ -84,7 +89,9 @@ public class EditContactActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        locationField.setHint(Html.fromHtml(getString(R.string.location)+" <small>(optional)</small>", Html.FROM_HTML_MODE_LEGACY));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            locationField.setHint(Html.fromHtml(getString(R.string.location)+" <small>(optional)</small>", Html.FROM_HTML_MODE_LEGACY));
+        }
 
         if(useDarkTheme) {
             setDrawableLeft(locationField, R.drawable.ic_location_white);
@@ -142,7 +149,7 @@ public class EditContactActivity extends AppCompatActivity {
         contact_logo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI), IMAGE_FROM_GALLERY);
+                startActivityForResult(new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI), IMAGE_FROM_GALLERY);
             }
         });
 
@@ -184,6 +191,11 @@ public class EditContactActivity extends AppCompatActivity {
             Toast.makeText(this, "Ragac nitoa", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // on save / update contact info, update widget too
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        int appWidgetIds[] = appWidgetManager.getAppWidgetIds(new ComponentName(this, RecentContactsProvider.class));
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.words);
 
         final String name = contactNameField.getText().toString();
         final String location = locationField.getText().toString();

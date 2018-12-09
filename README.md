@@ -32,10 +32,12 @@ This app is currently in development, which means that in the future, many more 
 ```
 $ git clone https://github.com/[YOUR-USERNAME]/lead-management-android.git
 ```
-**3.** **Open the project** using [Android Studio](https://developer.android.com/studio/index.html) by clicking **Open an existing Android Studio Project**.
+**3.** Set up the Firebase project, Download google-services.json and paste it into app/ folder
+
+**4.** **Open the project** using [Android Studio](https://developer.android.com/studio/index.html) by clicking **Open an existing Android Studio Project**.
 ![](https://lh4.googleusercontent.com/ttV9QNEuOltxmSiZSfRZxDPy_ZetUaBwmm7MeyXTo6xNB8nc6kFAbwU5zWWLaU0AB1xyP8vigMV9Hm7WmJrA=w1863-h978)
 
-**4.** **Run the project on an AVD** (Android Virtual Device) by clicking the **Run** button on Android Studio Toolbar.
+**5.** **Run the project on an AVD** (Android Virtual Device) by clicking the **Run** button on Android Studio Toolbar.
 
 ## Contributing
 
